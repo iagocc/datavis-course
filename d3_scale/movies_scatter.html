@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Scatterplot</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+</head>
+
+<body>
+<div id="container">
+    <h1>Gráfico</h1>
+    <div id="chart"></div>
+
+    <h1>Resposta</h1>
+    <p>Não existe uma correlação visível entre o orçamento e a bilheteria. É possível ver que filmes com orçamentos grandes com bilheterias baixas e o contrário também é verdade.</p>
+    <p>O filme Avatar pode ser considerado como um <i>outlier</i> visto que ele apresenta uma bilheteria muito maior que os demais filmes comparados.</p>
+</div>
+
+<script type="text/javascript">
+
+    function render(dataset) {
+        // Primeiro definimos o objeto margin
+        let margin = {top: 40, right: 40, bottom: 40, left: 40};
+        
+        // Depois definimos w e h como as dimensões internas
+        // da área do gráfico (área útil)
+        let w = 1024 - margin.left - margin.right;
+        let h = 400 - margin.top - margin.bottom;
+
+        // Depois um elemento g no svg que vai transladar a origem 
+        // do gráfico como sendo a origem da área útil do gráfico
+
+        let svg = d3.select("#chart")
+                .append("svg")
+                    .attr("width", w + margin.left + margin.right)
+                    .attr("height", h + margin.top + margin.bottom)
+                .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        // Agora todo o código pode ignorar as margens. 
+        // Copie aqui o código de criação das escalas do arquivo
+        // anterior (vai continuar o mesmo)
+        let max_x = Math.max.apply(Math, dataset.map(o => o.Worldwide_Gross_M))
+        let max_y = Math.max.apply(Math,dataset.map(o => o.Budget_M))
+
+        let x_scale = d3.scaleLinear()
+                        .domain([0, max_x])
+                        .range([0,w])
+
+        let y_scale = d3.scaleLinear()
+                        .domain([0, max_y])
+                        .range([h,0])   
+
+        let x_axis = d3.axisBottom()
+                        .scale(x_scale)
+
+        let y_axis = d3.axisLeft()
+                        .scale(y_scale)
+
+        // Depois adicione os elementos círculos
+        svg.selectAll("circle")
+            .data(dataset)
+            .enter()
+            .append("circle")
+            .attr("cx", d => x_scale(d.Worldwide_Gross_M))
+            .attr("cy", d => y_scale(d.Budget_M))
+            .attr("r", 5)
+            .attr("fill", "#88D498")
+            .attr("stroke", "#1A936F")
+
+        svg.append("g")
+            .attr("transform", "translate(0,"+(h+10)+")")
+            .call(x_axis )   
+            
+        svg.append("g")
+            .call(y_axis)
+
+
+        svg.append("text")
+            .attr("transform", "translate(" + (w/2) + "," + (h + margin.bottom) + ")")
+            .style("text-anchor", "middle")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "15px")
+            .text("Bilheteria")
+
+        svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left-4)
+            .attr("x",0 - (h / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "15px")
+            .text("Orçamento")
+
+    }
+
+
+    d3.json("data/movies.json").then(function(json){ 
+        render(json)
+    })
+</script>
+</body>
+</html>
