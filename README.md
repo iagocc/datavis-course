@@ -19,4 +19,9 @@
 ## Aula do dia 12/09/2018
 [movies_scatter.html](d3_scale/movies_scatter.html)<br>
 
+---
+## Aula do dia 24/09/2018
+[acoes.html](d3_crossfilter/acoes.html)<br>
+[movies.html](d3_crossfilter/movies.html)<br>
+
 Para saber mais sobre a sintaxe markdown, veja [este guia](https://guides.github.com/features/mastering-markdown/).
