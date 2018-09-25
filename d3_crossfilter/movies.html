@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Valores das ações da Tesla e do Facebook</title>
+    <link rel="stylesheet" href="css/dc.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/crossfilter.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="js/dc.min.js"></script>
+
+</head>
+<body>
+     <div><h1>Gráficos</h1>
+        <div id="chart"></div>
+        <div id="chart2"></div>
+    </div>
+    <script type="text/javascript">
+        let barChart = dc.barChart('#chart');
+        let barChart2 = dc.barChart('#chart2');
+
+        d3.json("data/movies.json").then(function(data){
+            // formatando nossos dados
+
+            data.forEach(function(d){
+                d.Year = +d.Year
+                d.Worldwide_Gross_M = +d.Worldwide_Gross_M;
+                d.Budget_M = +d.Budget_M;
+            });
+
+            //criando um crossfilter
+            let facts = crossfilter(data);
+
+            let yearDim = facts.dimension(function(d){
+                return d.Year
+            })
+
+            let genreDim = facts.dimension(d => d.Genre)
+
+            let yearFilter = yearDim.group().reduceSum(d => d.Worldwide_Gross_M)
+            let genreFilter = genreDim.group().reduceSum(d => d.Worldwide_Gross_M)
+
+            let xScale = d3.scaleLinear()
+                           .domain([yearDim.bottom(1)[0].Year, yearDim.top(1)[0].Year]);
+
+            barChart.width(800)
+                     .height(400)
+                     .margins({top: 50, right: 50, bottom: 25, left: 40})
+                     .dimension(yearDim)
+                     .x(xScale)
+                     .renderHorizontalGridLines(true)
+                     .legend(dc.legend().x(700).y(5).itemHeight(13).gap(5))
+                     .brushOn(false)    
+                     .group(yearFilter, "Gross")
+                     .xAxis().tickFormat(d3.format("d"));
+            
+            barChart.xAxis().ticks(5)
+
+            barChart2.width(800)
+                     .height(400)
+                     .margins({top: 50, right: 50, bottom: 25, left: 40})
+                     .dimension(genreDim)
+                     .x(d3.scaleOrdinal().domain(genreDim))
+                     .xUnits(dc.units.ordinal)
+                     .renderHorizontalGridLines(true)
+                     .legend(dc.legend().x(700).y(5).itemHeight(13).gap(5))
+                     .brushOn(false)    
+                     .group(genreFilter, "Gross")
+
+            dc.renderAll();
+
+        });
+    </script>           
+</body>
+</html>

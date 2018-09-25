@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Criando um crossfilter</title>
+    <script src="js/crossfilter.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+        d3.csv("data/stocks.csv").then(function(data){
+            // formatando nossos dados
+            let parseDate = d3.timeParse("%Y/%m/%d");
+            data.forEach(function(d){
+                d.date = parseDate(d.date);
+                d.tesla = +d.tesla;
+                d.facebook = +d.facebook;
+            });
+
+            //criando um crossfilter
+            let facts = crossfilter(data);
+
+            let date_dim = facts.dimension(d => d.date)
+            let tesla_dim = facts.dimension(d => d.tesla)
+            let date_month_dim = facts.dimension(d => d.date.getMonth())
+
+            let december = date_month_dim.filter([11])
+
+            let top_ten_tesla = tesla_dim.top(10)
+
+            let tesla_by_day = date_dim.group().reduceSum(d => d.tesla)
+
+            console.log(top_ten_tesla) //all() retorna todos os registros brutos
+        });
+    </script>           
+</body>
+</html>
