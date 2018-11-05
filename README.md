@@ -34,4 +34,8 @@
 [songs.html](d3_networks_trees/songs.html)<br>
 [lesmiserables.html](d3_networks_trees/lesmiserables.html)<br>
 
+## Aula do dia 31/10/2018
+[songs.html](d3_interactive/usa.html)<br>
+[lesmiserables.html](d3_interactive/earthquakes.html)<br>
+
 Para saber mais sobre a sintaxe markdown, veja [este guia](https://guides.github.com/features/mastering-markdown/).
